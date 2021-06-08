@@ -10,7 +10,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 import 'page1.dart';
 import 'page2.dart';
-import 'page2.dart';
 
 Future<void> main() async {
  WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +42,7 @@ class _JoyPadState extends State<JoyPad> {
   final String SERVICE_UUID = "eb36d2c8-e3da-41f7-8120-2664c83fa432";
   final String CHARACTERISTIC_UUID = "433d109a-a336-4479-bfa5-7c29097d65ca";
   final String TARGET_DEVICE_NAME = "Kutar bilisim";
-  final cagir aa= cagir();
+ List<double> traceVoltage = List();
   FlutterBlue flutterBlue = FlutterBlue.instance;
   StreamSubscription<ScanResult> scanSubScription;
 
@@ -53,7 +52,7 @@ class _JoyPadState extends State<JoyPad> {
   String connectionText = "";
     TextEditingController nameController = TextEditingController();
   String fullName = '';
-
+  
   @override
   void initState() {
     super.initState();
@@ -137,6 +136,10 @@ class _JoyPadState extends State<JoyPad> {
     targetCharacteristic.write(bytes);
     
   }
+  String _dataParser(List<int> dataFromDevice){
+    return utf8.decode(dataFromDevice);
+  }
+
  
   @override
   Widget build(BuildContext context) {
@@ -172,7 +175,6 @@ child: Text("Hakkında"),
           ],
           onSelected: (int menu){
             if(menu ==1){
-              writeData(aa.caa);
            Navigator.push((context), MaterialPageRoute(
              builder: (context)=>page1()));
             }
@@ -187,7 +189,8 @@ child: Text("Hakkında"),
         ],
       ),
         
-  
+
+
   
       body: Container(
         
@@ -199,35 +202,23 @@ child: Text("Hakkında"),
                 ),
               )
               
-            : Row(
-               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               crossAxisAlignment: CrossAxisAlignment.center, 
+            : ListView(
+              
                 children: <Widget>[
-     Container(
-       width: 100,
-       height: 50,
-       margin: EdgeInsets.only(right:20),
-       child: TextField(
-         
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      
-                      border: OutlineInputBorder(),
-                      labelText: 'Komut',
-                    ),
-                    onChanged: (text) {
-                      setState(() {
-                        fullName = text;
-                      writeData(fullName); 
-                      });
-                    },
-                  ),
-     ),
-	
-                  JoystickView(
+    
+Center(child: Container(
+  margin: EdgeInsets.only(top:50,bottom:50),
+  child: Text("Kontroller",style: TextStyle(fontSize: 24,color: Colors.black45,fontWeight: FontWeight.w800),))),	
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[ 
+                      JoystickView(
+                        
+                        onDirectionChanged: onDirectionChanged,
+                      ),
                     
-                    onDirectionChanged: onDirectionChanged,
-                  ),
+                
                   
                   PadButtonsView(
                     
@@ -254,8 +245,35 @@ child: Text("Hakkında"),
                     
                     padButtonPressedCallback: padBUttonPressedCallback,
                   ),
+                    ],
+                  ),
+                  Center(child: Container(
+                    margin: EdgeInsets.only(bottom:50,top:50),
+                    
+                    child: Text(targetCharacteristic.read().toString(),style: TextStyle(fontSize: 24,color: Colors.black54,fontWeight: FontWeight.w700),))), 
+         Center(
+           child: Container(
              
-         
+       width: 250,
+       height: 50,
+       margin: EdgeInsets.only(top:100,bottom: 150),
+       child: TextField(
+           
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        
+                        border: OutlineInputBorder(),
+                        labelText: 'Komut',
+                      ),
+                      onChanged: (text) {
+                        setState(() {
+                          fullName = text;
+                        writeData(fullName); 
+                        });
+                      },
+                    ),
+     ),
+         ), 
 
                 ],
                 
